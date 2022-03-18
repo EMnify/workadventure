@@ -1,12 +1,13 @@
 version: "3"
 services:
   reverse-proxy:
-    image: traefik:v2.0
+    image: traefik:v2.5.4
     command:
-      - --api.insecure=true
       - --providers.docker
       - --entryPoints.web.address=:80
       - --entryPoints.websecure.address=:443
+      - --accesslog=true
+      - --log.level=WARN
     ports:
       - "80:80"
       - "443:443"
@@ -32,7 +33,8 @@ services:
       MAPS_URL: /maps
       STARTUP_COMMAND_1: ./templater.sh
       STARTUP_COMMAND_2: yarn install
-      TURN_SERVER: "turn:localhost:3478,turns:localhost:5349"
+      STUN_SERVER: "stun:stun.l.google.com:19302"
+      # TURN_SERVER: "turn:game-dev-emnify-workadventure-eu-west-1.oss-eks.dev.emnify.io:3478,turns:game-dev-emnify-workadventure-eu-west-1.oss-eks.dev.emnify.io:5349"
       DISABLE_NOTIFICATIONS: "$DISABLE_NOTIFICATIONS"
       SKIP_RENDER_OPTIMIZATIONS: "$SKIP_RENDER_OPTIMIZATIONS"
       # Use TURN_USER/TURN_PASSWORD if your Coturn server is secured via hard coded credentials.
@@ -59,6 +61,7 @@ services:
     #command: yarn run profile
     environment:
       DEBUG: "*"
+      NODE_ENV: development
       STARTUP_COMMAND_1: yarn install
       SECRET_JITSI_KEY: "$SECRET_JITSI_KEY"
       SECRET_KEY: yourSecretKey
@@ -66,7 +69,6 @@ services:
       API_URL: back:50051
       JITSI_URL: $JITSI_URL
       JITSI_ISS: $JITSI_ISS
-      FRONT_URL: http://localhost
       OPID_CLIENT_ID: $OPID_CLIENT_ID
       OPID_CLIENT_SECRET: $OPID_CLIENT_SECRET
       OPID_CLIENT_ISSUER: $OPID_CLIENT_ISSUER
